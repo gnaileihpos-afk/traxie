@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traxie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-backdrop" class="sidebar-backdrop hidden" aria-hidden="true"></div>
+
+    <aside id="sidebar" class="sidebar" aria-label="Navigation">
+      <div class="sidebar-brand">
+        <span class="brand-icon" aria-hidden="true">🌿</span>
+        <div class="brand-text">
+          <span class="brand-name">Traxie</span>
+          <span class="brand-tagline">track your trash</span>
+        </div>
+      </div>
+
+      <div id="sidebar-profile-card" class="sidebar-profile-card">
+        <div id="profile-display" class="profile-display hidden">
+          <div class="profile-avatar-wrap">
+            <div id="profile-avatar" class="profile-avatar" aria-hidden="true"></div>
+            <span id="profile-accessory" class="profile-accessory hidden" aria-hidden="true"></span>
+          </div>
+          <div class="profile-info">
+            <span id="profile-name" class="profile-name"></span>
+            <span id="sidebar-rank" class="sidebar-rank hidden"></span>
+            <span id="sidebar-points" class="sidebar-points">⚡ 0 pts</span>
+          </div>
+        </div>
+        <div id="profile-placeholder" class="profile-placeholder">
+          <span class="profile-placeholder-icon" aria-hidden="true">👤</span>
+          <span>No profile yet</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Main navigation">
+        <p class="nav-section-label">NAVIGATION</p>
+        <button class="nav-item active" data-page="home" aria-current="page">
+          <span class="nav-icon" aria-hidden="true">🏠</span>
+          <span class="nav-label">
+            <span class="nav-title">Home</span>
+            <span class="nav-sub">Scan & impact</span>
+          </span>
+          <span class="nav-dot" aria-hidden="true"></span>
+        </button>
+        <button class="nav-item" data-page="collection">
+          <span class="nav-icon" aria-hidden="true">📖</span>
+          <span class="nav-label">
+            <span class="nav-title">Collection</span>
+            <span class="nav-sub">Your scanned items</span>
+          </span>
+        </button>
+        <button class="nav-item" data-page="leaderboard">
+          <span class="nav-icon" aria-hidden="true">🏆</span>
+          <span class="nav-label">
+            <span class="nav-title">Leaderboard & Friends</span>
+            <span class="nav-sub">Compete & connect</span>
+          </span>
+        </button>
+        <button class="nav-item" data-page="myworld">
+          <span class="nav-icon" aria-hidden="true">🌲</span>
+          <span class="nav-label">
+            <span class="nav-title">My World</span>
+            <span class="nav-sub">Your growing forest</span>
+          </span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="sidebar-footer-link" data-page="settings" type="button">
+          <span aria-hidden="true">⚙️</span> Settings
+        </button>
+        <button class="sidebar-footer-link" id="help-btn" type="button">
+          <span aria-hidden="true">❓</span> Help & FAQ
+        </button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <button id="sidebar-toggle" class="sidebar-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar">
+        <span class="hamburger" aria-hidden="true"></span>
+      </button>
+
+      <!-- HOME PAGE -->
+      <section id="page-home" class="page active" aria-label="Home">
+        <header class="page-header page-header-simple">
+          <div class="page-header-left">
+            <h1 class="page-title">Home</h1>
+            <p id="home-date-streak" class="page-subtitle"></p>
+          </div>
+        </header>
+
+        <div class="hero-greeting-card hero-greeting-compact">
+          <h2 id="hero-greeting" class="hero-greeting"></h2>
+          <div class="hero-progress-section">
+            <div class="hero-progress-header">
+              <span id="hero-actions-today">🌱 0/3 scans today</span>
+              <span id="hero-progress-pct">0%</span>
+            </div>
+            <div class="hero-progress-bar">
+              <div id="hero-progress-fill" class="hero-progress-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="home-grid home-grid-simple">
+          <div class="scanner-card">
+            <div class="scanner-card-header">
+              <h3 class="card-title">AI Trash Scanner</h3>
+            </div>
+            <div class="scanner-viewfinder">
+              <video id="video" class="hidden" autoplay playsinline muted></video>
+              <img id="photo" alt="Captured photo" class="hidden">
+              <div id="photo-placeholder" class="scanner-placeholder">
+                <span class="scanner-camera-icon" aria-hidden="true">📷</span>
+                <p>Scan any trash item, then verify disposal by scanning the bin to earn eco points</p>
+              </div>
+              <p id="camera-error" class="error hidden"></p>
+              <p id="bin-scan-instruction" class="bin-scan-instruction hidden">Point camera at the disposal bin</p>
+              <div id="scan-overlay" class="scan-overlay hidden" aria-hidden="true">
+                <div class="scan-grid"></div>
+                <div class="scan-corners">
+                  <span></span><span></span><span></span><span></span>
+                </div>
+                <div class="scan-line"></div>
+                <div class="scan-mesh"></div>
+              </div>
+              <div class="viewfinder-corners" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+            <div class="scanner-controls">
+              <button id="start-btn" type="button" class="btn-scanner-secondary">Start Camera</button>
+              <button id="capture-btn" type="button" class="btn-scanner-secondary" disabled>Take Photo</button>
+              <button id="capture-bin-btn" type="button" class="btn-scanner-secondary hidden" disabled>Capture bin</button>
+              <button id="cancel-bin-btn" type="button" class="btn-scanner-secondary hidden">Cancel</button>
+              <button id="identify-btn" type="button" class="btn-scan-primary" disabled>📷 Scan Item</button>
+            </div>
+            <div id="identify-status" class="identify-status hidden">
+              <span class="spinner" aria-hidden="true"></span>
+              <span id="identify-status-text">Analyzing waste item…</span>
+            </div>
+            <div id="bin-identify-status" class="identify-status hidden">
+              <span class="spinner" aria-hidden="true"></span>
+              <span id="bin-identify-status-text">Identifying bin type…</span>
+            </div>
+            <div id="identify-result" class="identify-result hud-card hidden">
+              <h3 id="identify-result-name" class="hud-name"></h3>
+              <div class="hud-block">
+                <span class="hud-label">Recycle tip</span>
+                <ul id="identify-result-recycle" class="hud-bullet-list"></ul>
+              </div>
+              <div class="hud-block hud-block-fact">
+                <span class="hud-label">Fun fact</span>
+                <p id="identify-result-fact" class="hud-fact-line"></p>
+              </div>
+              <button id="upcycle-btn" type="button" class="upcycle-ideas-btn hidden">Upcycle ideas</button>
+              <div id="verify-disposal-section" class="verify-disposal-section">
+                <div class="hud-meta hud-meta-visible">
+                  <span id="scan-points-earned" class="hud-points hidden"></span>
+                  <span id="scan-category" class="hud-category hidden"></span>
+                  <span id="disposal-verified-badge" class="verified-badge hidden">✓ Verified</span>
+                </div>
+                <div id="verify-disposal-prompt">
+                  <button id="verify-disposal-btn" type="button" class="btn-verify-disposal">Verify disposal</button>
+                  <p id="verify-disposal-subtext" class="verify-disposal-subtext">Scan the bin you're putting this in</p>
+                </div>
+                <button id="retry-bin-btn" type="button" class="btn-retry-bin hidden">Try again — scan bin</button>
+              </div>
+              <button id="lifecycle-btn" type="button" class="lifecycle-view-btn hidden">View lifecycle</button>
+              <button id="impact-toggle-btn" type="button" class="impact-toggle-btn" aria-expanded="false">More details</button>
+              <div id="impact-details" class="impact-details hidden">
+                <div class="hud-block">
+                  <span class="hud-label">Ecological impact</span>
+                  <ul id="identify-result-impact" class="hud-bullet-list"></ul>
+                </div>
+              </div>
+            </div>
+            <p id="identify-error" class="identify-error hidden"></p>
+          </div>
+
+        </div>
+
+        <div class="impact-mini-row impact-mini-row-home">
+          <div class="impact-mini-card">
+            <span class="impact-mini-icon" aria-hidden="true">🌳</span>
+            <span id="mini-trees" class="impact-mini-value">0</span>
+            <span class="impact-mini-label">Trees grown</span>
+          </div>
+          <div class="impact-mini-card">
+            <span class="impact-mini-icon" aria-hidden="true">🔥</span>
+            <span id="mini-streak" class="impact-mini-value">0</span>
+            <span class="impact-mini-label">Day streak</span>
+          </div>
+          <div class="impact-mini-card">
+            <span class="impact-mini-icon" aria-hidden="true">🌍</span>
+            <span id="mini-co2" class="impact-mini-value">0</span>
+            <span class="impact-mini-label">kg CO₂ saved</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- COLLECTION PAGE -->
+      <section id="page-collection" class="page hidden" aria-label="Collection">
+        <header class="page-header page-header-simple">
+          <div class="page-header-left">
+            <h1 class="page-title">Collection</h1>
+            <p class="page-subtitle">Discover waste & recyclable items</p>
+          </div>
+        </header>
+
+        <div class="collection-progress-card">
+          <div class="collection-progress-header">
+            <span id="collection-progress-text">0 / 50 items collected</span>
+            <span id="collection-progress-pct">0%</span>
+          </div>
+          <div class="collection-progress-bar">
+            <div id="collection-progress-fill" class="collection-progress-fill"></div>
+          </div>
+          <div id="collection-rarity-breakdown" class="collection-rarity-breakdown" aria-label="Collection rarity breakdown"></div>
+        </div>
+
+        <div id="collection-rarity-filter" class="collection-rarity-filter" role="tablist" aria-label="Filter by rarity"></div>
+        <div id="collection-filter" class="collection-filter" role="tablist" aria-label="Filter by category"></div>
+        <div id="collection-grid" class="collection-grid"></div>
+        <div id="collection-bonus-section" class="collection-bonus-section hidden">
+          <h3 class="card-title-serif">Bonus discoveries</h3>
+          <div id="collection-bonus-list" class="collection-bonus-list"></div>
+        </div>
+      </section>
+
+      <!-- LEADERBOARD & FRIENDS PAGE -->
+      <section id="page-leaderboard" class="page hidden" aria-label="Leaderboard and Friends">
+        <header class="page-header page-header-simple">
+          <div class="page-header-left">
+            <h1 class="page-title">Leaderboard & Friends</h1>
+            <p id="leaderboard-date-streak" class="page-subtitle"></p>
+          </div>
+        </header>
+
+        <div class="community-tabs" role="tablist" aria-label="Leaderboard sections">
+          <button class="community-tab active" data-lb-tab="leaderboard" type="button">Leaderboard</button>
+          <button class="community-tab" data-lb-tab="friends" type="button">Friends</button>
+          <button class="community-tab" data-lb-tab="communities" type="button">Communities</button>
+          <button class="community-tab" data-lb-tab="challenges" type="button">Challenges</button>
+        </div>
+
+        <div class="community-layout community-layout-simple">
+          <div class="community-main">
+            <div id="lb-panel-leaderboard" class="community-panel active">
+              <div class="leaderboard-card">
+                <div id="main-leaderboard" class="friends-leaderboard"></div>
+              </div>
+            </div>
+            <div id="lb-panel-friends" class="community-panel hidden">
+              <div class="friends-add-card">
+                <h3 class="card-title-serif">Add a friend</h3>
+                <form id="friend-add-form" class="friend-add-form">
+                  <input id="friend-handle-input" type="text" placeholder="@username" maxlength="32" autocomplete="off">
+                  <button type="submit" class="btn-primary friend-add-btn">Send Request</button>
+                </form>
+              </div>
+              <div class="friends-section">
+                <h3 class="card-title-serif">Your Friends</h3>
+                <div id="friends-list" class="friends-list"></div>
+              </div>
+              <div class="friends-section">
+                <h3 class="card-title-serif">Pending — Received</h3>
+                <div id="friend-requests-received" class="friend-requests-list"></div>
+              </div>
+              <div class="friends-section">
+                <h3 class="card-title-serif">Pending — Sent</h3>
+                <div id="friend-requests-sent" class="friend-requests-list"></div>
+              </div>
+            </div>
+            <div id="lb-panel-communities" class="community-panel hidden">
+              <div id="my-communities-section" class="friends-section hidden">
+                <h3 class="card-title-serif">My Communities</h3>
+                <div id="my-communities-list" class="communities-grid"></div>
+              </div>
+              <div class="friends-section">
+                <h3 class="card-title-serif">Browse Communities</h3>
+                <div id="communities-browse-list" class="communities-grid"></div>
+              </div>
+            </div>
+            <div id="lb-panel-challenges" class="community-panel hidden">
+              <div class="friends-section">
+                <h3 class="card-title-serif">Friend Challenges</h3>
+                <div id="friend-challenge-create" class="challenge-create-card"></div>
+                <div id="friend-challenges-incoming" class="challenges-list"></div>
+                <div id="friend-challenges-active" class="challenges-list"></div>
+              </div>
+              <div class="friends-section">
+                <h3 class="card-title-serif">Community Challenges</h3>
+                <p class="section-hint">Group goals from communities you've joined</p>
+                <div id="community-challenges-list" class="challenges-list"></div>
+              </div>
+            </div>
+          </div>
+          <aside class="community-sidebar" id="lb-sidebar">
+            <div class="community-sidebar-card" id="lb-sidebar-friends">
+              <h3>Suggested Friends</h3>
+              <div id="friend-suggestions" class="friend-suggestions"></div>
+            </div>
+            <div class="community-sidebar-card hidden" id="lb-sidebar-communities">
+              <h3>Why join?</h3>
+              <p class="sidebar-hint">Communities unlock group challenges, shared leaderboards, and bonus points when goals are met.</p>
+            </div>
+            <div class="community-sidebar-card hidden" id="lb-sidebar-challenges">
+              <h3>Challenge rewards</h3>
+              <p class="sidebar-hint">Win friend challenges for <strong>+25 pts</strong>. Community goals award bonus points and badge unlocks to all participants.</p>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- MY WORLD PAGE -->
+      <section id="page-myworld" class="page hidden" aria-label="My World">
+        <header class="page-header page-header-simple">
+          <div class="page-header-left">
+            <h1 class="page-title">My World</h1>
+            <p id="myworld-date-streak" class="page-subtitle"></p>
+          </div>
+        </header>
+
+        <div class="myworld-layout">
+          <div class="myworld-main">
+            <div id="world-hero" class="world-hero world-hero-clean">
+              <div id="world-hero-art" class="world-hero-art" aria-hidden="true">
+                <img id="world-hero-img" class="world-banner-img" alt="">
+              </div>
+              <div class="world-hero-content">
+                <h2 id="world-hero-name" class="world-hero-name"></h2>
+              </div>
+              <div class="world-progress-overlay">
+                <div class="world-progress-bar">
+                  <div id="world-progress-fill" class="world-progress-fill"></div>
+                </div>
+                <span id="world-pts-away" class="world-pts-away"></span>
+              </div>
+            </div>
+
+            <div class="impact-section-card">
+              <h3 class="card-title-serif">Your impact equals…</h3>
+              <div class="impact-grid">
+                <div class="impact-item">
+                  <span class="impact-item-icon" aria-hidden="true">🌳</span>
+                  <span id="impact-trees-year" class="impact-item-text"></span>
+                </div>
+                <div class="impact-item">
+                  <span class="impact-item-icon" aria-hidden="true">🚗</span>
+                  <span id="impact-driving" class="impact-item-text"></span>
+                </div>
+                <div class="impact-item">
+                  <span class="impact-item-icon" aria-hidden="true">💡</span>
+                  <span id="impact-power" class="impact-item-text"></span>
+                </div>
+                <div class="impact-item">
+                  <span class="impact-item-icon" aria-hidden="true">🐢</span>
+                  <span id="impact-turtles" class="impact-item-text"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="impact-detail-card impact-detail-compact">
+              <div class="stats-grid stats-grid-compact">
+                <div class="stat-card">
+                  <span class="stat-value" id="stat-scans">0</span>
+                  <span class="stat-label">Total Scans</span>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-value" id="stat-waste">0</span>
+                  <span class="stat-label">Waste Diverted (kg)</span>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-value" id="stat-co2">0</span>
+                  <span class="stat-label">CO₂ Saved (kg)</span>
+                </div>
+              </div>
+              <div class="level-progress">
+                <div class="level-progress-header">
+                  <span id="level-label" class="level-label">Level 1</span>
+                  <span id="level-next" class="level-next"></span>
+                </div>
+                <div class="level-progress-bar">
+                  <div id="level-progress-fill" class="level-progress-fill"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="myworld-badges-sidebar">
+            <h3 class="card-title-serif">Badges</h3>
+            <div id="badges-list" class="badges-list"></div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- SETTINGS PAGE -->
+      <section id="page-settings" class="page hidden" aria-label="Settings">
+        <header class="page-header">
+          <div class="page-header-left">
+            <h1 class="page-title">Settings</h1>
+            <p class="page-subtitle">Manage your profile and API key</p>
+          </div>
+        </header>
+
+        <div class="settings-card">
+          <h3>Profile</h3>
+          <p class="settings-desc">Update your username and avatar.</p>
+          <button id="edit-profile-btn" type="button" class="btn-secondary">Edit Profile</button>
+        </div>
+
+        <div class="settings-card customize-card">
+          <h3>Customize</h3>
+          <p class="settings-desc">Equip prizes earned from wandering eco visitors. Locked items unlock as you complete quests.</p>
+
+          <div class="customize-preview-row">
+            <div class="customize-preview-label">Preview</div>
+            <div id="customize-preview-card" class="customize-preview-card">
+              <div class="profile-avatar-wrap">
+                <div id="customize-preview-avatar" class="profile-avatar">🌍</div>
+                <span id="customize-preview-accessory" class="profile-accessory hidden" aria-hidden="true"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="customize-section">
+            <h4 class="customize-heading">Avatar frame</h4>
+            <div id="frame-picker" class="customize-picker" role="listbox" aria-label="Avatar frames"></div>
+          </div>
+
+          <div class="customize-section">
+            <h4 class="customize-heading">Avatar accessory</h4>
+            <div id="accessory-picker" class="customize-picker" role="listbox" aria-label="Avatar accessories"></div>
+          </div>
+
+          <div class="customize-section">
+            <h4 class="customize-heading">Theme accent</h4>
+            <div id="accent-picker" class="customize-picker accent-picker" role="listbox" aria-label="Theme accents"></div>
+          </div>
+
+          <div class="customize-section">
+            <h4 class="customize-heading">Profile background</h4>
+            <div id="background-picker" class="customize-picker background-picker" role="listbox" aria-label="Profile backgrounds"></div>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <h3>OpenAI API Key</h3>
+          <p class="settings-desc">Required for AI trash identification. Stored locally in your browser.</p>
+          <label class="api-key-label hidden" for="api-key">OpenAI API Key</label>
+          <input
+            id="api-key"
+            type="password"
+            autocomplete="off"
+            placeholder="sk-..."
+            spellcheck="false"
+          >
+          <p class="settings-hint">Get a key at <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">platform.openai.com</a>.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Profile onboarding modal -->
+  <div id="profile-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content profile-modal-content">
+      <h2 id="profile-modal-title">Create Your Traxie Profile</h2>
+      <p class="modal-subtitle">Choose a callsign and avatar to begin your ecological journey.</p>
+      <form id="profile-form">
+        <label class="form-label" for="profile-username">Username <span class="required">*</span></label>
+        <input id="profile-username" type="text" required maxlength="24" placeholder="Eco Ranger" autocomplete="nickname">
+        <label class="form-label">Pick your Traxie avatar</label>
+        <div id="avatar-picker" class="avatar-picker"></div>
+        <input id="profile-avatar-input" type="hidden" value="🌍">
+        <div class="modal-actions">
+          <button type="submit" class="btn-primary">Launch Scanner</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Collection item detail modal -->
+  <div id="collection-detail-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="collection-detail-title">
+    <div class="modal-backdrop collection-detail-backdrop"></div>
+    <div class="modal-content collection-detail-content">
+      <span id="collection-detail-icon" class="collection-detail-icon" aria-hidden="true"></span>
+      <h2 id="collection-detail-title" class="collection-detail-title"></h2>
+      <div id="collection-detail-rarity" class="collection-detail-rarity"></div>
+      <p id="collection-detail-category" class="collection-detail-category"></p>
+      <p id="collection-detail-date" class="collection-detail-date"></p>
+      <p id="collection-detail-tip" class="collection-detail-tip"></p>
+      <p id="collection-detail-scans" class="collection-detail-scans"></p>
+      <button id="collection-detail-close" type="button" class="btn-primary">Close</button>
+    </div>
+  </div>
+
+  <!-- Help modal -->
+  <div id="help-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <h2 id="help-modal-title">Help & FAQ</h2>
+      <div class="help-content">
+        <h3>How do I scan trash?</h3>
+        <p>Go to Home, start your camera, take a photo of a waste item, then tap Scan Item. Read the tips, then tap Verify disposal and scan the bin you're using to earn eco points.</p>
+        <h3>How do points work?</h3>
+        <p>Scanning adds items to your Collection (+1 discovery pt). Main eco points come from verifying the correct bin — recycling, compost, landfill, and more. Rarer items award bigger bonuses when you match the right bin!</p>
+        <h3>What is the Collection?</h3>
+        <p>Every item you scan is saved to your Collection. Discover all 150 catalog items to complete your eco-dex!</p>
+        <h3>What is My World?</h3>
+        <p>Your world grows as you level up. Track your environmental impact and earn badges along the way.</p>
+        <h3>API Key</h3>
+        <p>You need an OpenAI API key in Settings to use the AI scanner. It's stored only on your device.</p>
+      </div>
+      <button id="help-close" type="button" class="btn-primary">Got it</button>
+    </div>
+  </div>
+
+  <!-- World transport celebration -->
+  <div id="transport-modal" class="transport-modal hidden" role="dialog" aria-modal="true" aria-labelledby="transport-title">
+    <div class="transport-backdrop"></div>
+    <div class="transport-particles" id="transport-particles" aria-hidden="true"></div>
+    <div class="transport-content">
+      <div class="transport-warp" aria-hidden="true">
+        <div class="warp-ring"></div>
+        <div class="warp-ring"></div>
+        <div class="warp-ring"></div>
+        <div class="warp-streaks"></div>
+      </div>
+      <div id="transport-world-banner" class="transport-world-banner" aria-hidden="true">
+        <img id="transport-world-img" class="world-banner-img" alt="">
+      </div>
+      <div class="transport-text">
+        <span class="transport-label">WORLD TRANSPORT</span>
+        <h2 id="transport-title" class="transport-world-name"></h2>
+        <p id="transport-desc" class="transport-desc"></p>
+        <p id="transport-level" class="transport-level"></p>
+        <button id="transport-dismiss" type="button" class="btn-primary">Enter World</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wandering visitor bubble -->
+  <div id="wanderer-bubble" class="wanderer-bubble hidden" role="button" tabindex="0" aria-label="Eco visitor quest">
+    <span id="wanderer-badge" class="wanderer-badge hidden" aria-hidden="true">!</span>
+    <span id="wanderer-emoji" class="wanderer-emoji" aria-hidden="true">🦝</span>
+    <div class="wanderer-bubble-text">
+      <span id="wanderer-name" class="wanderer-name">Trash Panda</span>
+      <span id="wanderer-hint" class="wanderer-hint">Tap for a quest!</span>
+    </div>
+    <button id="wanderer-dismiss" class="wanderer-dismiss" type="button" aria-label="Dismiss bubble">&times;</button>
+  </div>
+
+  <!-- Wanderer event modal -->
+  <div id="wanderer-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="wanderer-modal-title">
+    <div class="modal-backdrop wanderer-modal-backdrop"></div>
+    <div class="modal-content wanderer-modal-content">
+      <div class="wanderer-modal-header">
+        <span id="wanderer-modal-emoji" class="wanderer-modal-emoji" aria-hidden="true">🦝</span>
+        <div>
+          <h2 id="wanderer-modal-title">Trash Panda</h2>
+          <p id="wanderer-modal-greeting" class="modal-subtitle">Hey! Can you help me with 2 quick eco actions?</p>
+        </div>
+      </div>
+      <div id="wanderer-actions-list" class="wanderer-actions-list"></div>
+      <p id="wanderer-progress-text" class="wanderer-progress-text">0 / 2 complete</p>
+      <button id="wanderer-modal-close" type="button" class="btn-secondary">Close</button>
+    </div>
+  </div>
+
+  <!-- Prize celebration modal -->
+  <div id="prize-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="prize-modal-title">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content prize-modal-content">
+      <span class="prize-sparkle" aria-hidden="true">✨</span>
+      <h2 id="prize-modal-title">Quest complete!</h2>
+      <p class="modal-subtitle">You earned a customization prize</p>
+      <div id="prize-preview" class="prize-preview"></div>
+      <p id="prize-name" class="prize-name"></p>
+      <button id="prize-equip-btn" type="button" class="btn-primary">Equip</button>
+      <button id="prize-later-btn" type="button" class="btn-secondary prize-later-btn">Maybe later</button>
+    </div>
+  </div>
+
+  <!-- Community detail modal -->
+  <div id="community-detail-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="community-detail-title">
+    <div class="modal-backdrop community-detail-backdrop"></div>
+    <div class="modal-content community-detail-content">
+      <span id="community-detail-icon" class="community-detail-icon" aria-hidden="true"></span>
+      <h2 id="community-detail-title" class="community-detail-title"></h2>
+      <p id="community-detail-members" class="community-detail-members"></p>
+      <p id="community-detail-desc" class="community-detail-desc"></p>
+      <div class="community-detail-section">
+        <h3>Recent activity</h3>
+        <div id="community-detail-activity" class="community-detail-activity"></div>
+      </div>
+      <div class="community-detail-section">
+        <h3>Top members</h3>
+        <div id="community-detail-leaderboard" class="community-detail-leaderboard"></div>
+      </div>
+      <button id="community-detail-close" type="button" class="btn-primary">Close</button>
+    </div>
+  </div>
+
+  <!-- Upcycle ideas modal -->
+  <div id="upcycle-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="upcycle-modal-title">
+    <div class="modal-backdrop upcycle-backdrop"></div>
+    <div class="modal-content upcycle-modal-content">
+      <!-- Main ideas list view -->
+      <div id="upcycle-main-view">
+        <h2 id="upcycle-modal-title" class="upcycle-modal-title">Upcycle item</h2>
+        <p id="upcycle-modal-subtitle" class="modal-subtitle">Give this item a second life</p>
+        <ul id="upcycle-modal-list" class="upcycle-idea-list"></ul>
+        <p id="upcycle-modal-tip" class="upcycle-modal-tip">Scan a reuse bin to verify upcycling and earn bonus points</p>
+        <button id="upcycle-modal-close" type="button" class="btn-primary">Close</button>
+      </div>
+      <!-- Tutorial panel view -->
+      <div id="tutorial-panel" class="tutorial-panel hidden" role="region" aria-label="Tutorial steps">
+        <button id="tutorial-back-btn" type="button" class="tutorial-back-btn">← Back to ideas</button>
+        <h3 id="tutorial-title" class="tutorial-title"></h3>
+        <div id="tutorial-meta" class="tutorial-meta"></div>
+        <div id="tutorial-materials-block" class="tutorial-materials-block hidden">
+          <span class="tutorial-section-label">You'll need</span>
+          <div id="tutorial-materials" class="tutorial-materials-list"></div>
+        </div>
+        <div class="tutorial-steps-block">
+          <span class="tutorial-section-label">Steps</span>
+          <ol id="tutorial-steps" class="tutorial-steps-list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Post-scan lifecycle visualization -->
+  <div id="lifecycle-modal" class="lifecycle-modal hidden" role="dialog" aria-modal="true" aria-labelledby="lifecycle-modal-title">
+    <div class="lifecycle-backdrop"></div>
+    <div class="lifecycle-content">
+      <h2 id="lifecycle-modal-title" class="lifecycle-title">Item Lifecycle</h2>
+      <p id="lifecycle-item-name" class="lifecycle-subtitle"></p>
+
+      <div id="lifecycle-3d-stage" class="scan3d-stage">
+        <div class="scan3d-scene">
+          <div class="scan3d-platform" aria-hidden="true"></div>
+          <div id="lifecycle-isolate-loading" class="scan3d-isolate-loading hidden">
+            <span class="spinner" aria-hidden="true"></span>
+            <span class="scan3d-isolate-label">Isolating item…</span>
+          </div>
+          <div id="lifecycle-item-spin" class="scan3d-item-spin">
+            <img id="lifecycle-photo" alt="Scanned item" class="scan3d-isolated-item hidden">
+          </div>
+        </div>
+      </div>
+
+      <div class="lifecycle-journey">
+        <p id="lifecycle-journey-label" class="lifecycle-journey-label"></p>
+        <div id="lifecycle-journey-steps" class="lj-steps"></div>
+      </div>
+
+      <button id="lifecycle-close" type="button" class="btn-primary lifecycle-close-btn">Got it</button>
+    </div>
+  </div>
+
+  <!-- Bin verification correction modal -->
+  <div id="bin-correction-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="bin-correction-title">
+    <div class="modal-backdrop bin-correction-backdrop"></div>
+    <div class="modal-content bin-correction-content">
+      <span class="bin-correction-icon" aria-hidden="true">💡</span>
+      <h2 id="bin-correction-title" class="bin-correction-title">Almost — let's fix that</h2>
+      <p id="bin-correction-message" class="bin-correction-message"></p>
+      <button id="bin-correction-retry" type="button" class="btn-primary">Try again</button>
+      <button id="bin-correction-close" type="button" class="btn-secondary bin-correction-close-btn">Got it</button>
+    </div>
+  </div>
+
+  <!-- Bin verification success animation -->
+  <div id="verify-success-overlay" class="verify-success-overlay hidden" aria-hidden="true">
+    <div class="verify-success-particles" id="verify-success-particles"></div>
+    <div class="verify-success-burst">
+      <span class="verify-checkmark" aria-hidden="true">✓</span>
+    </div>
+    <span id="verify-success-points" class="verify-success-points">+20 pts</span>
+  </div>
+
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+  <span id="points-value" class="hidden" aria-hidden="true">0</span>
+  <canvas id="canvas" class="hidden"></canvas>
+
+  <!-- Quest Book floating action button -->
+  <button id="quest-book-btn" class="quest-book-fab" type="button" aria-label="Open Quest Journal">
+    <span class="quest-book-fab-icon" aria-hidden="true">📖</span>
+    <span id="quest-book-badge" class="quest-book-badge hidden" aria-hidden="true"></span>
+  </button>
+
+  <!-- Quest Book modal -->
+  <div id="quest-book-modal" class="quest-book-modal hidden" role="dialog" aria-modal="true" aria-labelledby="quest-book-title">
+    <div class="quest-book-backdrop"></div>
+    <div class="quest-book-wrap">
+      <button id="quest-book-close" class="quest-book-close" type="button" aria-label="Close Quest Journal">✕</button>
+      <div class="quest-book-cover">
+        <div class="quest-book-page quest-book-left">
+          <div class="quest-book-page-inner">
+            <h2 id="quest-book-title" class="quest-book-heading">Quest Journal</h2>
+            <div id="quest-left-world-title" class="quest-world-title"></div>
+            <div id="quest-left-content" class="quest-list"></div>
+          </div>
+          <div class="quest-page-lines" aria-hidden="true"></div>
+        </div>
+        <div class="quest-book-spine" aria-hidden="true"></div>
+        <div class="quest-book-page quest-book-right">
+          <div class="quest-book-page-inner">
+            <div id="quest-right-world-title" class="quest-world-title"></div>
+            <div id="quest-right-content" class="quest-right-content"></div>
+          </div>
+          <div class="quest-page-lines" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
